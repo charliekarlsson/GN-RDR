@@ -38,10 +38,10 @@
 </head>
 <body>
     <h1>Goon-Radar</h1>
-    <button id="sessionBtn">I'm on a session</button>
+    <button id="sessionBtn">I have gooned 8==D</button>
     <div class="stats">
-        <p id="count">Total sessions today: 0</p>
-        <p id="volume">Total volume: 0 L</p>
+        <p id="count">Total goons today: 0</p>
+        <p id="volume">Total Jizz: 0 L</p>
     </div>
 
     <!-- Firebase SDK -->
@@ -78,7 +78,7 @@
 
         // On button click
         sessionBtn.addEventListener('click', () => {
-            const oath = confirm("I swear that I have gooned!");
+            const oath = confirm("I swear on Orangies life that I have gooned!");
             if (!oath) return;
 
             statsRef.get().then(snapshot => {
