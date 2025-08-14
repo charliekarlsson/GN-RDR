@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,6 +33,28 @@
         margin-top: 30px;
         font-size: 1.2rem;
     }
+    .twitter-link {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #1da1f2;
+        border-radius: 50px;
+        padding: 15px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(29, 161, 242, 0.3);
+    }
+    .twitter-link:hover {
+        background-color: #0d8bd9;
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(29, 161, 242, 0.4);
+    }
+    .twitter-icon {
+        width: 30px;
+        height: 30px;
+        fill: white;
+        display: block;
+    }
 </style>
 </head>
 <body>
@@ -44,51 +65,71 @@
         <p id="volume">Total Jizz: 0 L</p>
     </div>
 
+    <!-- Twitter Link -->
+    <a href="https://x.com/goonradar" target="_blank" class="twitter-link" title="Follow @goonradar on X">
+        <svg class="twitter-icon" viewBox="0 0 24 24">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+    </a>
+
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-database-compat.min.js"></script>
     <script>
-        // TODO: Replace with your own Firebase project config
-        const firebaseConfig = {
-  apiKey: "AIzaSyBGWWTMAxPUbcfGB2z4o6TyFnAcSzCtHAg",
-  authDomain: "goon-radar.firebaseapp.com",
-  databaseURL: "https://goon-radar-default-rtdb.firebaseio.com",
-  projectId: "goon-radar",
-  storageBucket: "goon-radar.firebasestorage.app",
-  messagingSenderId: "694923915715",
-  appId: "1:694923915715:web:e3a0fc88b76d9d5f248d76",
-  measurementId: "G-YSQVL9B3E0"
-};
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
-        const sessionBtn = document.getElementById('sessionBtn');
-        const countEl = document.getElementById('count');
-        const volumeEl = document.getElementById('volume');
-
-        // Update stats live
-        const statsRef = db.ref('stats');
-        statsRef.on('value', snapshot => {
-            const data = snapshot.val() || { count: 0, volume: 0 };
-            countEl.textContent = `Total sessions today: ${data.count}`;
-            volumeEl.textContent = `Total volume: ${data.volume.toFixed(2)} L`;
-        });
-
-        // On button click
-        sessionBtn.addEventListener('click', () => {
-            const oath = confirm("I swear on Orangies life that I have gooned!");
-            if (!oath) return;
-
-            statsRef.get().then(snapshot => {
+        try {
+            // Firebase configuration
+            const firebaseConfig = {
+                apiKey: "AIzaSyBGWWTMAxPUbcfGB2z4o6TyFnAcSzCtHAg",
+                authDomain: "goon-radar.firebaseapp.com",
+                databaseURL: "https://goon-radar-default-rtdb.firebaseio.com",
+                projectId: "goon-radar",
+                storageBucket: "goon-radar.firebasestorage.app",
+                messagingSenderId: "694923915715",
+                appId: "1:694923915715:web:e3a0fc88b76d9d5f248d76",
+                measurementId: "G-YSQVL9B3E0"
+            };
+            
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            const db = firebase.database();
+            const sessionBtn = document.getElementById('sessionBtn');
+            const countEl = document.getElementById('count');
+            const volumeEl = document.getElementById('volume');
+            
+            // Update stats live
+            const statsRef = db.ref('stats');
+            statsRef.on('value', snapshot => {
                 const data = snapshot.val() || { count: 0, volume: 0 };
-                const newCount = (data.count || 0) + 1;
-                const avgVolumePerSession = 0.0065; // 6.5ml
-                const newVolume = (data.volume || 0) + avgVolumePerSession;
-                statsRef.set({ count: newCount, volume: newVolume });
+                countEl.textContent = `Total sessions today: ${data.count}`;
+                volumeEl.textContent = `Total volume: ${data.volume.toFixed(2)} L`;
+            }, error => {
+                console.error('Error reading data:', error);
+                countEl.textContent = 'Error loading data';
+                volumeEl.textContent = 'Error loading data';
             });
-        });
+            
+            // On button click
+            sessionBtn.addEventListener('click', () => {
+                const oath = confirm("I swear on Orangies life that I have gooned!");
+                if (!oath) return;
+                
+                statsRef.get().then(snapshot => {
+                    const data = snapshot.val() || { count: 0, volume: 0 };
+                    const newCount = (data.count || 0) + 1;
+                    const avgVolumePerSession = 0.0065; // 6.5ml
+                    const newVolume = (data.volume || 0) + avgVolumePerSession;
+                    return statsRef.set({ count: newCount, volume: newVolume });
+                }).catch(error => {
+                    console.error('Error updating data:', error);
+                    alert('Error updating data. Please try again.');
+                });
+            });
+            
+        } catch (error) {
+            console.error('Firebase initialization error:', error);
+            document.getElementById('count').textContent = 'Firebase connection error';
+            document.getElementById('volume').textContent = 'Check console for details';
+        }
     </script>
 </body>
 </html>
