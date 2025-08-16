@@ -55,6 +55,61 @@
         fill: white;
         display: block;
     }
+
+    /* Stickman style */
+    .stickman-section {
+        display: flex;
+        justify-content: center;
+        margin-top: 200px; /* flytta ner den ordentligt */
+        margin-bottom: 100px; /* lite luft innan footern/twitter-knappen */
+    }
+    .stickman-wrap {
+        --size: 240px;
+        --speed: 1.2s;
+        --stroke: #fff;
+        color: var(--stroke);
+        width: var(--size);
+        max-width: 100%;
+    }
+    .stickman {
+        display: block;
+        overflow: visible;
+    }
+    @keyframes arm-swing {
+        0%   { transform: rotate(0deg); }
+        25%  { transform: rotate(35deg); }
+        50%  { transform: rotate(70deg); }
+        75%  { transform: rotate(35deg); }
+        100% { transform: rotate(0deg); }
+    }
+    @keyframes ball-path {
+        0%   { transform: translate(0, 0); }
+        25%  { transform: translate(10px, 8px); }
+        50%  { transform: translate(-12px, 22px); }
+        75%  { transform: translate(-6px, 8px); }
+        100% { transform: translate(0, 0); }
+    }
+    #forearm {
+        transform-origin: 125px 100px;
+        animation: arm-swing var(--speed) ease-in-out infinite;
+    }
+    #ball {
+        animation: ball-path var(--speed) ease-in-out infinite;
+    }
+    .stickman-wrap:hover #forearm,
+    .stickman-wrap:hover #ball {
+        animation-duration: 2s;
+    }
+    .stickman-wrap::after {
+        content: "";
+        display: block;
+        width: 90px;
+        height: 12px;
+        margin: -18px auto 0;
+        border-radius: 50%;
+        background: radial-gradient(closest-side, rgba(0,0,0,.3), transparent 70%);
+        filter: blur(2px);
+    }
 </style>
 </head>
 <body>
@@ -63,6 +118,26 @@
     <div class="stats">
         <p id="count">Total goons accomplished: 0</p>
         <p id="volume">Total Jizz: 0 L</p>
+    </div>
+
+    <!-- Stickman placerad här nere -->
+    <div class="stickman-section">
+      <div class="stickman-wrap" aria-label="Animerad streckgubbe som dribblar bollen mellan benen">
+        <svg class="stickman" viewBox="0 0 200 240" width="240" height="288" role="img">
+          <circle cx="100" cy="40" r="18" stroke="currentColor" stroke-width="4" fill="none"/>
+          <line x1="100" y1="58" x2="100" y2="130" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+          <line x1="100" y1="130" x2="75" y2="190" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+          <line x1="100" y1="130" x2="125" y2="190" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+          <line x1="100" y1="85" x2="65" y2="110" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+          <circle id="shoulder" cx="100" cy="85" r="0.5" fill="transparent"/>
+          <line x1="100" y1="85" x2="125" y2="100" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+          <g id="forearm" transform="rotate(0 125 100)">
+            <line x1="125" y1="100" x2="150" y2="115" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="150" cy="115" r="4" fill="currentColor"/>
+          </g>
+          <circle id="ball" cx="112" cy="155" r="6" fill="currentColor"/>
+        </svg>
+      </div>
     </div>
 
     <!-- Twitter Link -->
@@ -77,7 +152,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-database-compat.min.js"></script>
     <script>
         try {
-            // Firebase configuration
             const firebaseConfig = {
                 apiKey: "AIzaSyBGWWTMAxPUbcfGB2z4o6TyFnAcSzCtHAg",
                 authDomain: "goon-radar.firebaseapp.com",
@@ -89,14 +163,12 @@
                 measurementId: "G-YSQVL9B3E0"
             };
             
-            // Initialize Firebase
             firebase.initializeApp(firebaseConfig);
             const db = firebase.database();
             const sessionBtn = document.getElementById('sessionBtn');
             const countEl = document.getElementById('count');
             const volumeEl = document.getElementById('volume');
             
-            // Update stats live
             const statsRef = db.ref('stats');
             statsRef.on('value', snapshot => {
                 const data = snapshot.val() || { count: 0, volume: 0 };
@@ -108,7 +180,6 @@
                 volumeEl.textContent = 'Error loading data';
             });
             
-            // On button click
             sessionBtn.addEventListener('click', () => {
                 const oath = confirm("I swear on Orangies life that I have gooned!");
                 if (!oath) return;
@@ -116,7 +187,7 @@
                 statsRef.get().then(snapshot => {
                     const data = snapshot.val() || { count: 0, volume: 0 };
                     const newCount = (data.count || 0) + 1;
-                    const avgVolumePerSession = 0.0065; // 6.5ml
+                    const avgVolumePerSession = 0.0065;
                     const newVolume = (data.volume || 0) + avgVolumePerSession;
                     return statsRef.set({ count: newCount, volume: newVolume });
                 }).catch(error => {
