@@ -33,76 +33,6 @@
         margin-top: 30px;
         font-size: 1.2rem;
     }
-    .token-contact {
-        margin-top: 30px;
-        font-size: 1rem;
-        color: #ff4081;
-    }
-    .token-contact a {
-        color: #ff4081;
-        text-decoration: underline;
-        cursor: pointer;
-    }
-    .token-contact a:hover {
-        color: #e91e63;
-    }
-    .stickman-container {
-        position: absolute;
-        bottom: 100px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 50px;
-        height: 120px;
-    }
-    .stickman {
-        position: relative;
-        width: 50px;
-        height: 120px;
-    }
-    .head {
-        width: 20px;
-        height: 20px;
-        background-color: #fff;
-        border-radius: 50%;
-        margin: 0 auto;
-    }
-    .body {
-        width: 2px;
-        height: 50px;
-        background-color: #fff;
-        margin: 0 auto;
-        position: relative;
-        top: 0;
-    }
-    .arm {
-        width: 2px;
-        height: 40px;
-        background-color: #fff;
-        position: absolute;
-        top: 10px;
-        left: 50%;
-        transform-origin: top;
-        animation: swing 1s infinite alternate;
-    }
-    .leg {
-        width: 2px;
-        height: 50px;
-        background-color: #fff;
-        position: absolute;
-        top: 50px;
-    }
-    .leg-left {
-        left: 50%;
-        transform: translateX(-10px);
-    }
-    .leg-right {
-        left: 50%;
-        transform: translateX(10px);
-    }
-    @keyframes swing {
-        0% { transform: rotate(-30deg); }
-        100% { transform: rotate(30deg); }
-    }
     .twitter-link {
         position: fixed;
         bottom: 20px;
@@ -125,6 +55,83 @@
         fill: white;
         display: block;
     }
+
+    /* Stickman */
+    .stickman-container {
+        position: absolute;
+        bottom: 150px; /* Justera så den inte kolliderar */
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 120px;
+    }
+
+    .stickman {
+        position: relative;
+        width: 50px;
+        height: 120px;
+    }
+
+    .head {
+        width: 20px;
+        height: 20px;
+        background-color: #fff;
+        border-radius: 50%;
+        margin: 0 auto;
+    }
+
+    .body {
+        width: 2px;
+        height: 50px;
+        background-color: #fff;
+        margin: 0 auto;
+        position: relative;
+        top: 0;
+    }
+
+    .arm {
+        width: 2px;
+        height: 40px;
+        background-color: #fff;
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform-origin: top;
+        animation: swing 1s infinite alternate;
+    }
+
+    .leg {
+        width: 2px;
+        height: 50px;
+        background-color: #fff;
+        position: absolute;
+        top: 50px;
+    }
+
+    .leg-left {
+        left: 50%;
+        transform: translateX(-10px);
+    }
+
+    .leg-right {
+        left: 50%;
+        transform: translateX(10px);
+    }
+
+    @keyframes swing {
+        0% { transform: rotate(-30deg); }
+        100% { transform: rotate(30deg); }
+    }
+
+    /* Contact Address */
+    .contact-container {
+        margin-top: 30px;
+    }
+    .contact-address {
+        color: #ff4081;
+        cursor: pointer;
+        text-decoration: underline;
+    }
 </style>
 </head>
 <body>
@@ -135,12 +142,12 @@
         <p id="volume">Total Jizz: 0 L</p>
     </div>
 
-    <!-- Token Contact Field -->
-    <div class="token-contact">
-        <p>Token Address: <a id="tokenLink" href="#" target="_blank">Paste your address here</a></p>
+    <!-- Contact Address -->
+    <div class="contact-container">
+        <span id="contactAddress" class="contact-address">Paste contact address here</span>
     </div>
 
-    <!-- Stickman Animation -->
+    <!-- Stickman -->
     <div class="stickman-container">
         <div class="stickman">
             <div class="head"></div>
@@ -210,19 +217,21 @@
                     alert('Error updating data. Please try again.');
                 });
             });
+
+            // Contact address link
+            const contactEl = document.getElementById('contactAddress');
+            contactEl.addEventListener('click', () => {
+                const url = prompt("Enter URL to link the contact address:");
+                if (url) {
+                    window.open(url, "_blank");
+                }
+            });
             
         } catch (error) {
             console.error('Firebase initialization error:', error);
             document.getElementById('count').textContent = 'Firebase connection error';
             document.getElementById('volume').textContent = 'Check console for details';
         }
-
-        // Token Address Link
-        const tokenLink = document.getElementById('tokenLink');
-        const tokenAddress = "0x123456789abcdef"; // klistra in din token-adress här
-        const tokenURL = "https://etherscan.io/address/0x123456789abcdef"; // din länk
-        tokenLink.textContent = tokenAddress;
-        tokenLink.href = tokenURL;
     </script>
 </body>
 </html>
