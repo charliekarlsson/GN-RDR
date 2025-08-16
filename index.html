@@ -60,8 +60,8 @@
     .stickman-section {
         display: flex;
         justify-content: center;
-        margin-top: 200px; /* flytta ner den ordentligt */
-        margin-bottom: 100px; /* lite luft innan footern/twitter-knappen */
+        margin-top: 200px;
+        margin-bottom: 100px;
     }
     .stickman-wrap {
         --size: 240px;
@@ -78,26 +78,15 @@
     @keyframes arm-swing {
         0%   { transform: rotate(0deg); }
         25%  { transform: rotate(35deg); }
-        50%  { transform: rotate(70deg); }
+        50%  { transform: rotate(75deg); }
         75%  { transform: rotate(35deg); }
         100% { transform: rotate(0deg); }
-    }
-    @keyframes ball-path {
-        0%   { transform: translate(0, 0); }
-        25%  { transform: translate(10px, 8px); }
-        50%  { transform: translate(-12px, 22px); }
-        75%  { transform: translate(-6px, 8px); }
-        100% { transform: translate(0, 0); }
     }
     #forearm {
         transform-origin: 125px 100px;
         animation: arm-swing var(--speed) ease-in-out infinite;
     }
-    #ball {
-        animation: ball-path var(--speed) ease-in-out infinite;
-    }
-    .stickman-wrap:hover #forearm,
-    .stickman-wrap:hover #ball {
+    .stickman-wrap:hover #forearm {
         animation-duration: 2s;
     }
     .stickman-wrap::after {
@@ -120,22 +109,27 @@
         <p id="volume">Total Jizz: 0 L</p>
     </div>
 
-    <!-- Stickman placerad här nere -->
+    <!-- Stickman placerad här -->
     <div class="stickman-section">
-      <div class="stickman-wrap" aria-label="Animerad streckgubbe som dribblar bollen mellan benen">
+      <div class="stickman-wrap" aria-label="Animerad streckgubbe som för armen mellan benen">
         <svg class="stickman" viewBox="0 0 200 240" width="240" height="288" role="img">
+          <!-- Huvud -->
           <circle cx="100" cy="40" r="18" stroke="currentColor" stroke-width="4" fill="none"/>
+          <!-- Kropp -->
           <line x1="100" y1="58" x2="100" y2="130" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+          <!-- Ben -->
           <line x1="100" y1="130" x2="75" y2="190" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
           <line x1="100" y1="130" x2="125" y2="190" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+          <!-- Vänster arm -->
           <line x1="100" y1="85" x2="65" y2="110" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+          <!-- Höger axel & överarm -->
           <circle id="shoulder" cx="100" cy="85" r="0.5" fill="transparent"/>
           <line x1="100" y1="85" x2="125" y2="100" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+          <!-- Höger underarm + hand -->
           <g id="forearm" transform="rotate(0 125 100)">
-            <line x1="125" y1="100" x2="150" y2="115" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
-            <circle cx="150" cy="115" r="4" fill="currentColor"/>
+            <line x1="125" y1="100" x2="165" y2="135" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="165" cy="135" r="5" fill="currentColor"/>
           </g>
-          <circle id="ball" cx="112" cy="155" r="6" fill="currentColor"/>
         </svg>
       </div>
     </div>
