@@ -56,81 +56,48 @@
         display: block;
     }
 
-    /* Stickman */
-    .stickman-container {
-        position: absolute;
-        bottom: 150px; /* Justera så den inte kolliderar */
-        left: 50%;
-        transform: translateX(-50%);
-        width: 50px;
-        height: 120px;
+    /* Stickman style */
+    .stickman-section {
+        display: flex;
+        justify-content: center;
+        margin-top: 200px;
+        margin-bottom: 100px;
     }
-
+    .stickman-wrap {
+        --size: 240px;
+        --speed: 1.2s;
+        --stroke: #fff;
+        color: var(--stroke);
+        width: var(--size);
+        max-width: 100%;
+    }
     .stickman {
-        position: relative;
-        width: 50px;
-        height: 120px;
+        display: block;
+        overflow: visible;
     }
-
-    .head {
-        width: 20px;
-        height: 20px;
-        background-color: #fff;
+    @keyframes arm-swing {
+        0%   { transform: rotate(0deg); }
+        25%  { transform: rotate(35deg); }
+        50%  { transform: rotate(75deg); }
+        75%  { transform: rotate(35deg); }
+        100% { transform: rotate(0deg); }
+    }
+    #forearm {
+        transform-origin: 125px 100px;
+        animation: arm-swing var(--speed) ease-in-out infinite;
+    }
+    .stickman-wrap:hover #forearm {
+        animation-duration: 2s;
+    }
+    .stickman-wrap::after {
+        content: "";
+        display: block;
+        width: 90px;
+        height: 12px;
+        margin: -18px auto 0;
         border-radius: 50%;
-        margin: 0 auto;
-    }
-
-    .body {
-        width: 2px;
-        height: 50px;
-        background-color: #fff;
-        margin: 0 auto;
-        position: relative;
-        top: 0;
-    }
-
-    .arm {
-        width: 2px;
-        height: 40px;
-        background-color: #fff;
-        position: absolute;
-        top: 10px;
-        left: 50%;
-        transform-origin: top;
-        animation: swing 1s infinite alternate;
-    }
-
-    .leg {
-        width: 2px;
-        height: 50px;
-        background-color: #fff;
-        position: absolute;
-        top: 50px;
-    }
-
-    .leg-left {
-        left: 50%;
-        transform: translateX(-10px);
-    }
-
-    .leg-right {
-        left: 50%;
-        transform: translateX(10px);
-    }
-
-    @keyframes swing {
-        0% { transform: rotate(-30deg); }
-        100% { transform: rotate(30deg); }
-    }
-
-    /* Contact Address */
-    .contact-container {
-        margin-top: 30px;
-    }
-    .contact-address {
-        color: #ff4081;
-        cursor: pointer;
-        text-decoration: underline;
+        background: radial-gradient(closest-side, rgba(0,0,0,.3), transparent 70%);
+        filter: blur(2px);
     }
 </style>
 </head>
@@ -142,20 +109,29 @@
         <p id="volume">Total Jizz: 0 L</p>
     </div>
 
-    <!-- Contact Address -->
-    <div class="contact-container">
-        <span id="contactAddress" class="contact-address">Paste contact address here</span>
-    </div>
-
-    <!-- Stickman -->
-    <div class="stickman-container">
-        <div class="stickman">
-            <div class="head"></div>
-            <div class="body"></div>
-            <div class="arm"></div>
-            <div class="leg leg-left"></div>
-            <div class="leg leg-right"></div>
-        </div>
+    <!-- Stickman placerad här -->
+    <div class="stickman-section">
+      <div class="stickman-wrap" aria-label="Animerad streckgubbe som för armen mellan benen">
+        <svg class="stickman" viewBox="0 0 200 240" width="240" height="288" role="img">
+          <!-- Huvud -->
+          <circle cx="100" cy="40" r="18" stroke="currentColor" stroke-width="4" fill="none"/>
+          <!-- Kropp -->
+          <line x1="100" y1="58" x2="100" y2="130" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+          <!-- Ben -->
+          <line x1="100" y1="130" x2="75" y2="190" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+          <line x1="100" y1="130" x2="125" y2="190" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+          <!-- Vänster arm -->
+          <line x1="100" y1="85" x2="65" y2="110" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+          <!-- Höger axel & överarm -->
+          <circle id="shoulder" cx="100" cy="85" r="0.5" fill="transparent"/>
+          <line x1="100" y1="85" x2="125" y2="100" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+          <!-- Höger underarm + hand -->
+          <g id="forearm" transform="rotate(0 125 100)">
+            <line x1="125" y1="100" x2="165" y2="135" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="165" cy="135" r="5" fill="currentColor"/>
+          </g>
+        </svg>
+      </div>
     </div>
 
     <!-- Twitter Link -->
@@ -170,7 +146,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-database-compat.min.js"></script>
     <script>
         try {
-            // Firebase configuration
             const firebaseConfig = {
                 apiKey: "AIzaSyBGWWTMAxPUbcfGB2z4o6TyFnAcSzCtHAg",
                 authDomain: "goon-radar.firebaseapp.com",
@@ -182,14 +157,12 @@
                 measurementId: "G-YSQVL9B3E0"
             };
             
-            // Initialize Firebase
             firebase.initializeApp(firebaseConfig);
             const db = firebase.database();
             const sessionBtn = document.getElementById('sessionBtn');
             const countEl = document.getElementById('count');
             const volumeEl = document.getElementById('volume');
             
-            // Update stats live
             const statsRef = db.ref('stats');
             statsRef.on('value', snapshot => {
                 const data = snapshot.val() || { count: 0, volume: 0 };
@@ -201,7 +174,6 @@
                 volumeEl.textContent = 'Error loading data';
             });
             
-            // On button click
             sessionBtn.addEventListener('click', () => {
                 const oath = confirm("I swear on Orangies life that I have gooned!");
                 if (!oath) return;
@@ -209,22 +181,13 @@
                 statsRef.get().then(snapshot => {
                     const data = snapshot.val() || { count: 0, volume: 0 };
                     const newCount = (data.count || 0) + 1;
-                    const avgVolumePerSession = 0.0065; // 6.5ml
+                    const avgVolumePerSession = 0.0065;
                     const newVolume = (data.volume || 0) + avgVolumePerSession;
                     return statsRef.set({ count: newCount, volume: newVolume });
                 }).catch(error => {
                     console.error('Error updating data:', error);
                     alert('Error updating data. Please try again.');
                 });
-            });
-
-            // Contact address link
-            const contactEl = document.getElementById('contactAddress');
-            contactEl.addEventListener('click', () => {
-                const url = prompt("Enter URL to link the contact address:");
-                if (url) {
-                    window.open(url, "_blank");
-                }
             });
             
         } catch (error) {
